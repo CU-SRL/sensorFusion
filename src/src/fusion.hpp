@@ -3,5 +3,7 @@
 
 #include "Arduino.h"
 #include "Eigen.h"
+#include <Eigen/Dense>
+#include <Eigen/Eigen>
 
 #endif
