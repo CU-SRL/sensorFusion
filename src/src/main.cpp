@@ -24,6 +24,10 @@
 // GLOBAL VARIABLES I KNOW BAD... FIX LATER
 DigitalIMU IMU = DigitalIMU(55,0x28);
 IMUdata imu_data;
+int interval_IMU = 45;
+
+ThreadController thread_control = ThreadController();
+Thread* ThreadIMU = new Thread(); 
 
 void IMU_LOOP() {
     IMU.sample(&imu_data); /*!< Sample the IMU by calling the IMU Sample function */
@@ -53,9 +57,15 @@ void setup()
     if (!IMU.begin()) {
         KILLSYSTEM();
     }
+
+    ThreadIMU->onRun(IMU_LOOP); /*!< Set the IMU looping function for the ThreadController */
+    ThreadIMU->setInterval(interval_IMU); /*!< Set the IMU refresh rate (Interval) */
+
+    /* Add threads to ThreadController */
+    thread_control.add(ThreadIMU);
 }
 
 void loop()
 {
-    IMU_LOOP();
+    thread_control.run();
 }
