@@ -7,6 +7,14 @@
 
 #include "fusion.hpp"
 
+namespace constants
+{
+    int interval_IMU = 45; // IMU sample rate
+    double dt = interval_IMU/(1000 );
+
+    
+};
+
 namespace matrices
 {
     // BOTH DISCARDED AFTER FIRST RUN
