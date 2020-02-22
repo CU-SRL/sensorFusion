@@ -11,6 +11,8 @@
 #include "Eigen.h"
 #include <Eigen/Eigen>
 #include <Adafruit_BNO055.h>
+#include "Thread.h"
+#include <ThreadController.h>
 
 //! IMU Struct
 /*!
