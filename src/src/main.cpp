@@ -42,15 +42,7 @@ void KILLSYSTEM()
 
 void setup()
 {
-    Eigen::MatrixXd m(2,2);
-    m(0,0) = 3;
-    m(1,0) = 2.5;
-    m(0,1) = -1;
-    m(1,1) = m(1,0) + m(0,1);
-
-
-
-    delay(2500); /*!< Wait 2.5 seconds before starting everything up */
+    delay(5000); /*!< Wait 2.5 seconds before starting everything up */
 
     Serial.begin(115200); /*!< Start serial comms */
 
@@ -58,6 +50,7 @@ void setup()
     if (!IMU.begin()) {
         KILLSYSTEM();
     }
+    State state;
 
     ThreadIMU->onRun(IMU_LOOP); /*!< Set the IMU looping function for the ThreadController */
     ThreadIMU->setInterval(constants::interval_IMU); /*!< Set the IMU refresh rate (Interval) */

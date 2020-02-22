@@ -10,9 +10,7 @@
 namespace constants
 {
     int interval_IMU = 45; // IMU sample rate
-    double dt = interval_IMU/(1000 );
-
-    
+    double dt = (double)interval_IMU/(double)1000; // delta t in seconds
 };
 
 namespace matrices
