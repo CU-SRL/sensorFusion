@@ -7,6 +7,38 @@
 #ifndef _FUSION_HPP_
 #define _FUSION_HPP_
 
+
+//INITIAL STATE ENTER BEFORE FLIGHT
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+#define x_x_0 0 //initial position in x direction
+#define x_y_0 0 //initial position in y direction
+#define x_z_0 0 //initial position in z direction
+#define v_x_0 0 // initial velocity in the x direction
+#define v_y_0 0 // initial velocity in the y direction
+#define v_z_0 0 // initial velocity in the z direction
+#define a_x_0 0 // initial acceleration in x direction
+#define a_y_0 0 // initial acceleration in y direction
+#define a_z_0 0 // initial acceleration in z direction
+#define theta_x_0 0 // initial attitude in the x direction
+#define theta_y_0 0 // initial attitude in the y direction
+#define theta_z_0 0 // initial attitude in the z direction
+#define omega_x_0 0 // initial angular velocity in the x direction
+#define omega_y_0 0 // initial angular velocity in the y direction
+#define omega_z_0 0 // initial angular velocity in the z direction
+#define alpha_x_0 0 // initial angular acceleration in the x direction
+#define alpha_y_0 0 // initial angular acceleration in the y direction
+#define alpha_z_0 0 // initial angular acceleration in the z direction
+#define mag_x_0 0 //  nitial expected magnetic field reading in the x direction
+#define mag_y_0 0 // initial expected magnetic field reading in the y direction
+#define mag_z_0 0 // initial expected magnetic field reading in the z direction
+
+///////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////
+
+
+
 #include "Arduino.h"
 #include "Eigen.h"
 #include <Eigen/Eigen>
@@ -37,6 +69,10 @@ class State
     public:
         State();
         ~State();
+
+        void dataAq(IMUdata *data);
+        void updateDynamics();
+    
 
     protected:
 };
