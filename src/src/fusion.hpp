@@ -75,8 +75,7 @@ class State
         Eigen::MatrixXd predict();
 
         void updateDynamics();
-    
-
+        void print_mtxd(const Eigen::MatrixXd& X); 
     protected:
 };
 
