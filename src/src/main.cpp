@@ -20,6 +20,23 @@
 /***************************************************************/
 #include "fusion.hpp"
 
+
+// GLOBAL VARIABLES I KNOW BAD... FIX LATER
+DigitalIMU IMU = DigitalIMU(55,0x28);
+IMUdata imu_data;
+
+void IMU_LOOP() {
+    IMU.sample(&imu_data); /*!< Sample the IMU by calling the IMU Sample function */
+}
+
+void KILLSYSTEM()
+{
+    while(true)
+    {
+        Serial.println("Failed to Init!!");
+    }
+}
+
 void setup()
 {
     Eigen::MatrixXd m(2,2);
@@ -27,9 +44,18 @@ void setup()
     m(1,0) = 2.5;
     m(0,1) = -1;
     m(1,1) = m(1,0) + m(0,1);
+
+    delay(2500); /*!< Wait 2.5 seconds before starting everything up */
+
+    Serial.begin(115200); /*!< Start serial comms */
+
+    /* Initialize BNO055 IMU sensor */
+    if (!IMU.begin()) {
+        KILLSYSTEM();
+    }
 }
 
 void loop()
 {
-    
+    IMU_LOOP();
 }
