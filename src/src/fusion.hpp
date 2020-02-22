@@ -71,6 +71,9 @@ class State
         ~State();
 
         void dataAq(IMUdata *data);
+
+        Eigen::MatrixXd predict();
+
         void updateDynamics();
     
 
@@ -92,6 +95,12 @@ class DigitalIMU {
         DigitalIMU(int32_t sensorID, uint8_t address);
         bool begin();
         void sample(IMUdata* data);
+};
+
+namespace constants
+{
+    extern int interval_IMU;
+    extern double dt;
 };
 
 /* All lower case variables are vectors || all uppercase are Matrices*/

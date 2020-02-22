@@ -20,10 +20,18 @@ void State::dataAq(IMUdata *data){
 
 
 
+Eigen::MatrixXd State::predict(){
+    //x should already be defined
+
+    //
+
+ //Prediction step x = Ax
+    matrices::x_kp = matrices::A * matrices::x_k_1;
+}
+
+
 void State::updateDynamics(){
 
-    //Prediction step x = Ax
-    matrices::x_kp = matrices::A * matrices::x_k_1;
 
     //rest of the kalman filter
 
