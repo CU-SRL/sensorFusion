@@ -59,11 +59,11 @@ void DigitalIMU::sample(IMUdata* data, State *ptr) {
 
 
     data->Temp = board.getTemp();
+    Serial.printf("\n");
 
-    // Serial.printf(" Magnetometer_X: %.5f",data->MAG[0]);
-    // Serial.printf(" Magnetometer_Y: %.5f",data->MAG[1]);
-    // Serial.printf(" Magnetometer_Z: %.5f\n",data->MAG[2]);
-    // Serial.println("");
+    // Serial.printf(" GYRO: %.5f",data->GYRO[0]);
+    // Serial.printf(" GYRO: %.5f",data->GYRO[1]);
+    // Serial.printf(" GYRO: %.5f\n",data->GYRO[2]);
 
     imu::Quaternion quat;
     quat = board.getQuat();
@@ -72,20 +72,26 @@ void DigitalIMU::sample(IMUdata* data, State *ptr) {
     data->Quat[2] = quat.y();
     data->Quat[3] = quat.z();
 
-    Serial.printf(" IMU_Quat_W: %.5f",data->Quat[0]);
-    Serial.printf(" IMU_Quat_X: %.5f",data->Quat[1]);
-    Serial.printf(" IMU_Quat_Y: %.5f\n",data->Quat[2]);
-    Serial.printf(" IMU_Quat_Z: %.5f\n",data->Quat[3]);
+    // Serial.printf(" Euler_X: %.5f",(ptr->eulerAngle(data->GYRO[0], constants::gyro_sen, (float)constants::dt)));
+    // Serial.printf(" Euler_Y: %.5f",(ptr->eulerAngle(data->GYRO[1], constants::gyro_sen, (float)constants::dt)));
+    // Serial.printf(" Euler_Z: %.5f\n",(ptr->eulerAngle(data->GYRO[2], constants::gyro_sen, (float)constants::dt)));
+
+
 
     ptr->quaternion(ptr->eulerAngle(data->GYRO[0], constants::gyro_sen, (float)constants::dt), 
                     ptr->eulerAngle(data->GYRO[1], constants::gyro_sen, (float)constants::dt),
                     ptr->eulerAngle(data->GYRO[2], constants::gyro_sen, (float)constants::dt),
                     data->q_w, data->q_x, data->q_y, data->q_z);
 
-    Serial.printf(" Quat_W: %.5f",data->q_w);
-    Serial.printf(" Quat_X: %.5f",data->q_x);
-    Serial.printf(" Quat_Y: %.5f\n",data->q_y);
-    Serial.printf(" Quat_Z: %.5f\n",data->q_z);
+
+    Serial.printf(" IMU_Quat_W: %.5f",data->Quat[0]);
+    Serial.printf(" IMU_Quat_X: %.5f",data->Quat[1]);
+    Serial.printf(" IMU_Quat_Y: %.5f",data->Quat[2]);
+    Serial.printf(" IMU_Quat_Z: %.5f\n",data->Quat[3]);
+    Serial.printf(" Quat_W:     %.5f",data->q_w);
+    Serial.printf(" Quat_X:     %.5f",data->q_x);
+    Serial.printf(" Quat_Y:     %.5f",data->q_y);
+    Serial.printf(" Quat_Z:     %.5f\n",data->q_z);
 
     data->t = millis();
 }

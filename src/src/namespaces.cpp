@@ -9,7 +9,7 @@
 
 namespace constants
 {
-    int interval_IMU = 45; // IMU sample rate
+    int interval_IMU = 10; // IMU sample rate
     double dt = (double)interval_IMU/(double)1000; // delta t in seconds
     double baseAccel_error = 0.00015/sqrt(1/dt); // in m/s^2
     double baseGyro_error = 0.1; // in DPS
