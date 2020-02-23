@@ -54,7 +54,7 @@ State::State(IMUdata* inputData) : data(inputData)
     matrices::H.block<3,3>(12,12) = I_block;
     matrices::H.block<3,3>(18,18) = I_block;
     
-    // State::print_mtxd(matrices::H);
+    State::print_mtxd(matrices::H);
 
 }
 
@@ -163,7 +163,7 @@ void State::updateDynamics()
 {
     State::dataAq(State::data); // ACQUIRE DATA
     State::predict(); // 
-    State::processCovarianceMatrix(); //
+    State::processCovarianceMatrix(); // 
     State::calculateKalmanGain(); // CALCULATE KALMAN GAIN
 }
 
