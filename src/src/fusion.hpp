@@ -66,8 +66,12 @@ struct IMUdata {
 class State
 {
     private:
+        float accel_error = 0.0;
+        float gyro_error = 0.0;
+        IMUdata *data;
+
     public:
-        State();
+        State(IMUdata*);
         ~State();
 
         void dataAq(IMUdata *data);
@@ -76,6 +80,10 @@ class State
 
         void updateDynamics();
         void print_mtxd(const Eigen::MatrixXd& X); 
+
+        float calcAccelSystematicError();
+        float calcGyroSystematicError();
+
     protected:
 };
 

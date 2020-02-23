@@ -50,7 +50,7 @@ void setup()
     if (!IMU.begin()) {
         KILLSYSTEM();
     }
-    State state;
+    State state(&imu_data);
 
     ThreadIMU->onRun(IMU_LOOP); /*!< Set the IMU looping function for the ThreadController */
     ThreadIMU->setInterval(constants::interval_IMU); /*!< Set the IMU refresh rate (Interval) */
