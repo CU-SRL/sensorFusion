@@ -63,20 +63,20 @@ State::~State(){}
 
 
 
-Eigen::MatrixXd dcmBodyToEarth(double theta, double phi, double psi){
+// Eigen::MatrixXd dcmBodyToEarth(double theta, double phi, double psi){
 
-    // theta = theta*PI/180;
-    // phi = phi*PI/180;
-    // psi = psi*PI/180;
+//     // theta = theta*PI/180;
+//     // phi = phi*PI/180;
+//     // psi = psi*PI/180;
 
-    Eigen::MatrixXd DCM;
-    DCM << 
-    cos(theta)*cos(psi), sin(phi)*sin(theta)*cos(psi)-cos(phi)*sin(psi), cos(phi)*sin(theta)*cos(psi)-sin(phi)*sin(psi),
-    cos(theta)*sin(psi), sin(phi)*sin(theta)*sin(psi)-cos(phi)*cos(psi), cos(phi)*sin(theta)*sin(psi)-sin(phi)*cos(psi),
-    sin(theta - PI)        , sin(phi)*cos(theta)                           , cos(phi)*cos(theta)                           ;
+//     Eigen::MatrixXd DCM(3,3);
+//     DCM << 
+//     cos(theta)*cos(psi), sin(phi)*sin(theta)*cos(psi)-cos(phi)*sin(psi), cos(phi)*sin(theta)*cos(psi)-sin(phi)*sin(psi),
+//     cos(theta)*sin(psi), sin(phi)*sin(theta)*sin(psi)-cos(phi)*cos(psi), cos(phi)*sin(theta)*sin(psi)-sin(phi)*cos(psi),
+//     sin(theta - PI)        , sin(phi)*cos(theta)                           , cos(phi)*cos(theta)                           ;
 
-    return DCM;
-}
+//     return DCM;
+// }
 
 
 
@@ -84,10 +84,6 @@ Eigen::MatrixXd dcmBodyToEarth(double theta, double phi, double psi){
 // This is updating our observation vector from out struct of IMU data
     //IMPORTANT--this wont work once we update our sensor suite
 void State::dataAq(IMUdata *data){
-
-
-
-
     /*******************************************/
     /* CONVERT ACCELERATION FROM BODY TO EARTH */
     /*******************************************/
@@ -102,53 +98,37 @@ void State::dataAq(IMUdata *data){
     double theta = matrices::x_k.coeff(10);   // pulling these euler angles from the last state matrix
     double psi   = matrices::x_k.coeff(11);   // pulling these euler angles from the last state matrix
 
+    double phi_k1 = 0.0;    //  Phi at K+1
+    double theta_k1 = 0.0;  //  Theta at K+1
+    double psi_k1 = 0.0;    // PSI at K+1
+
     double phi_dot    = p + (q*sin(phi) + r*cos(phi)) * tan(theta);  //These are all of our angular rates relative to earth:  phi dot
     double theta_dot  = q*cos(phi)-r*sin(phi);                       //These are all of our angular rates relative to earth:  theta dot
     double psi_dot    = (q*sin(phi)+r*cos(phi))/cos(theta);          //These are all of our angular rates relative to earth:  psi dot
 
-    Eigen::VectorXd bodyAccel;
+    // Serial.print(phi_dot);
+    // Serial.print(" ");
+    // Serial.print(theta_dot);
+    // Serial.print(" ");
+    // Serial.println(psi_dot);
+
+    Eigen::VectorXd bodyAccel(3);
     bodyAccel <<((data->LINEAR_ACCEL[0])*(1-State::calcAccelSystematicError())), //this is our body accel corrected with systematic error
                 ((data->LINEAR_ACCEL[1])*(1-State::calcAccelSystematicError())), //this is our body accel corrected with systematic error 
                 ((data->LINEAR_ACCEL[2])*(1-State::calcAccelSystematicError())); //this is our body accel corrected with systematic error
 
-    Eigen::VectorXd earthAccel = dcmBodyToEarth( theta + constants::dt * theta_dot,             //This is the standar DCM frame transformation for body to earth using e = Tb
-                                                 phi   + constants::dt *  phi_dot,              //This is the standar DCM frame transformation for body to earth using e = Tb
-                                                 psi   + constants::dt * psi_dot) * bodyAccel;  //This is the standar DCM frame transformation for body to earth using e = Tb 
+    theta_k1 = theta+constants::dt*theta_dot;  //This is the standar DCM frame transformation for body to earth using e = Tb
+    phi_k1 = phi+constants::dt*phi_dot;        //This is the standar DCM frame transformation for body to earth using e = Tb
+    psi_k1 = psi+constants::dt*psi_dot;        //This is the standar DCM frame transformation for body to earth using e = Tb
 
+    Eigen::Matrix3d DCM;
+    DCM << 
+    cos(theta_k1)*cos(psi_k1), sin(phi_k1)*sin(theta_k1)*cos(psi_k1)-cos(phi_k1)*sin(psi_k1), cos(phi_k1)*sin(theta_k1)*cos(psi_k1)-sin(phi_k1)*sin(psi_k1),
+    cos(theta_k1)*sin(psi_k1), sin(phi_k1)*sin(theta_k1)*sin(psi_k1)-cos(phi_k1)*cos(psi_k1), cos(phi_k1)*sin(theta_k1)*sin(psi_k1)-sin(phi_k1)*cos(psi_k1),
+    sin(theta_k1 - PI)       , sin(phi_k1)*cos(theta_k1)                                    , cos(phi_k1)*cos(theta_k1);
 
-
-    /*******************************************/
-    /*                  END                    */
-    /*******************************************/
-
-
-
-
-
-    // matrices::x_m << 
-    //             0,
-    //             0,
-    //             0,
-    //             0,
-    //             0,
-    //             0,
-    //             data->LINEAR_ACCEL[0],
-    //             data->LINEAR_ACCEL[1],
-    //             data->LINEAR_ACCEL[2],
-    //             0,
-    //             0,
-    //             0,
-    //             data->GYRO[0],
-    //             data->GYRO[1],
-    //             data->GYRO[2],
-    //             0,
-    //             0,
-    //             0,
-    //             data->MAG[0],
-    //             data->MAG[1],
-    //             data->MAG[2]; 
-
-
+    Eigen::VectorXd earthAccel(3);
+    earthAccel << DCM*bodyAccel;
 
     matrices::y << 
                 0,
@@ -171,7 +151,7 @@ void State::dataAq(IMUdata *data){
                 0,
                 data->MAG[0],
                 data->MAG[1],
-                data->MAG[2]; 
+                data->MAG[2];
 }
 
 
@@ -214,7 +194,19 @@ void State::calculateKalmanGain()
         0,
         0;
 
-    matrices::R = temp.transpose()*temp;
+    matrices::R = temp*temp.transpose();
+
+    Serial.println("R");
+    State::print_mtxd(matrices::R);
+    Serial.println("P_kp");
+    State::print_mtxd(matrices::P_kp);
+    Serial.println("H");
+    State::print_mtxd(matrices::H);
+
+    while(true)
+    {
+    }
+
     matrices::K = (matrices::P_kp*matrices::H)*((matrices::H*matrices::P_kp*matrices::H.transpose()+matrices::R).inverse());
 }
 
@@ -223,15 +215,40 @@ void State::processCovarianceMatrix()
     matrices::P_kp = matrices::A * matrices::P_k_1 * matrices::A.transpose();
 }
 
+void State::stateDetermination()
+{
+    // matrices::x_k = matrices::x_kp+matrices::K*(matrices::y-(matrices::H*matrices::x_kp));
+    matrices::x_k = matrices::K*matrices::y;
+    // Serial.println("K");
+    // State::print_mtxd(matrices::K);
+    // Serial.println("y");
+    // State::print_mtxd(matrices::y);
+}
+
+void State::updatePreviousState()
+{
+    matrices::x_k_1 = matrices::x_k;
+}
+
+void State::updateProcessCovarianceMatrix()
+{
+    matrices::P_k_1 = (matrices::I-(matrices::K*matrices::H))*matrices::P_kp;
+}
+
 void State::updateDynamics()
 {
     State::dataAq(State::data); // ACQUIRE DATA
     State::predict(); // 
-    State::processCovarianceMatrix(); // 
+    State::processCovarianceMatrix(); //
     State::calculateKalmanGain(); // CALCULATE KALMAN GAIN
+    State::stateDetermination();
+    //State::print_mtxd(matrices::x_k);
+    State::updatePreviousState();
+    State::updateProcessCovarianceMatrix();
 }
 
-void State::print_mtxd(const Eigen::MatrixXd& X)  
+template<typename T>
+void State::print_mtxd(const T& X)  
 {
    int i, j, nrow, ncol;
    

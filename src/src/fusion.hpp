@@ -34,6 +34,30 @@
 #define mag_y_0 0 // initial expected magnetic field reading in the y direction
 #define mag_z_0 0 // initial expected magnetic field reading in the z direction
 
+
+#define p_x_x_0 0.1 //initial position variance in x direction
+#define p_x_y_0 0.1 //initial position variance in y direction
+#define p_x_z_0 0.1 //initial position variance in z direction
+#define p_v_x_0 0.1 // initial velocity variance in the x direction
+#define p_v_y_0 0.1 // initial velocity variance in the y direction
+#define p_v_z_0 0.1 // initial velocity variance in the z direction
+#define p_a_x_0 0.01 // initial acceleration variance in x direction
+#define p_a_y_0 0.01 // initial acceleration variance in y direction
+#define p_a_z_0 0.01 // initial acceleration variance in z direction
+#define p_theta_x_0 0.1 // initial attitude variance in the x direction
+#define p_theta_y_0 0.1 // initial attitude variance in the y direction
+#define p_theta_z_0 0.1 // initial attitude variance in the z direction
+#define p_omega_x_0 0.1 // initial angular velocity variance in the x direction
+#define p_omega_y_0 0.1 // initial angular velocity variance in the y direction
+#define p_omega_z_0 0.1 // initial angular velocity variance in the z direction
+#define p_alpha_x_0 0.01 // initial angular acceleration variance in the x direction
+#define p_alpha_y_0 0.01 // initial angular acceleration variance in the y direction
+#define p_alpha_z_0 0.01 // initial angular acceleration variance in the z direction
+#define p_mag_x_0 0 // initial expected magnetic field reading variance in the x direction
+#define p_mag_y_0 0 // initial expected magnetic field reading variance in the y direction
+#define p_mag_z_0 0 // initial expected magnetic field reading variance in the z direction
+
+
 ///////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////
 
@@ -84,11 +108,14 @@ class State
         void predict();
         void processCovarianceMatrix();
         void calculateKalmanGain();
+        void stateDetermination();
+        void updatePreviousState();
+        void updateProcessCovarianceMatrix();
         void updateDynamics();
-        Eigen::MatrixXd dcmBodyToEarth(double theta, double phi, double psi);
+        // Eigen::MatrixXd dcmBodyToEarth(double theta, double phi, double psi);
 
-
-        void print_mtxd(const Eigen::MatrixXd& X); 
+        template<typename T>
+        void print_mtxd(const T& X); 
 
         float calcAccelSystematicError();
         float calcGyroSystematicError();
