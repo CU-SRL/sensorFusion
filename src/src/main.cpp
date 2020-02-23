@@ -57,6 +57,14 @@ void setup()
 
     /* Add threads to ThreadController */
     thread_control.add(ThreadIMU);
+
+    // while (1 = 1)
+    // {
+    //     if (sqrt(imu_data.LINEAR_ACCEL[0]^2 + imu_data.LINEAR_ACCEL[1]^2 + imu_data.LINEAR_ACCEL[2]^2) > 20)
+    //     {
+    //         break;
+    //     }  
+    // } 
 }
 
 void loop()
