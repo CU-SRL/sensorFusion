@@ -20,16 +20,46 @@
 /***************************************************************/
 #include "fusion.hpp"
 
+
+// GLOBAL VARIABLES I KNOW BAD... FIX LATER
+DigitalIMU IMU = DigitalIMU(55,0x28);
+IMUdata imu_data;
+
+ThreadController thread_control = ThreadController();
+Thread* ThreadIMU = new Thread(); 
+
+void IMU_LOOP() {
+    IMU.sample(&imu_data); /*!< Sample the IMU by calling the IMU Sample function */
+}
+
+void KILLSYSTEM()
+{
+    while(true)
+    {
+        Serial.println("Failed to Init!!");
+    }
+}
+
 void setup()
 {
-    Eigen::MatrixXd m(2,2);
-    m(0,0) = 3;
-    m(1,0) = 2.5;
-    m(0,1) = -1;
-    m(1,1) = m(1,0) + m(0,1);
+    delay(5000); /*!< Wait 2.5 seconds before starting everything up */
+
+    Serial.begin(115200); /*!< Start serial comms */
+
+    /* Initialize BNO055 IMU sensor */
+    if (!IMU.begin()) {
+        KILLSYSTEM();
+    }
+    State state(&imu_data);
+
+    ThreadIMU->onRun(IMU_LOOP); /*!< Set the IMU looping function for the ThreadController */
+    ThreadIMU->setInterval(constants::interval_IMU); /*!< Set the IMU refresh rate (Interval) */
+
+    /* Add threads to ThreadController */
+    thread_control.add(ThreadIMU);
 }
 
 void loop()
 {
-    
+    thread_control.run();
 }
