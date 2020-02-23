@@ -1,7 +1,7 @@
 #include "fusion.hpp"
 
 // Constructor
-State::State()
+State::State(IMUdata* inputData) : data(inputData)
 {
     /*********************/
     /* POPULATE A MATRIX */
@@ -131,5 +131,15 @@ void State::print_mtxd(const Eigen::MatrixXd& X)
        Serial.println();
    }
    Serial.println();
+}
+
+float State::calcAccelSystematicError()
+{
+    return 0.03*((data->Temp)-25.0);
+}
+
+float State::calcGyroSystematicError()
+{
+    return 0.03*((data->Temp)-22.5);
 }
 
