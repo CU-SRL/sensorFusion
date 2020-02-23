@@ -68,46 +68,103 @@ State::~State()
     //IMPORTANT--this wont work once we update our sensor suite
 void State::dataAq(IMUdata *data){
     matrices::x_m << 
-                
-                 0,
-                 0,
-                 0,
-                 0,
-                 0,
-                 0,
-                 data->LINEAR_ACCEL[0],
-                 data->LINEAR_ACCEL[1],
-                 data->LINEAR_ACCEL[2],
-                 0,
-                 0,
-                 0,
-                 data->GYRO[0],
-                 data->GYRO[1],
-                 data->GYRO[2],
-                 0,
-                 0,
-                 0,
-                 data->MAG[0],
-                 data->MAG[1],
-                 data->MAG[2];   
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                data->LINEAR_ACCEL[0],
+                data->LINEAR_ACCEL[1],
+                data->LINEAR_ACCEL[2],
+                0,
+                0,
+                0,
+                data->GYRO[0],
+                data->GYRO[1],
+                data->GYRO[2],
+                0,
+                0,
+                0,
+                data->MAG[0],
+                data->MAG[1],
+                data->MAG[2]; 
+
+    matrices::y << 
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                (data->LINEAR_ACCEL[0])*(1-State::calcAccelSystematicError()),
+                (data->LINEAR_ACCEL[1])*(1-State::calcAccelSystematicError()),
+                (data->LINEAR_ACCEL[2])*(1-State::calcAccelSystematicError()),
+                0,
+                0,
+                0,
+                (data->GYRO[0])*(1-State::calcGyroSystematicError()),
+                (data->GYRO[1])*(1-State::calcGyroSystematicError()),
+                (data->GYRO[2])*(1-State::calcGyroSystematicError()),
+                0,
+                0,
+                0,
+                data->MAG[0],
+                data->MAG[1],
+                data->MAG[2]; 
 }
 
-Eigen::MatrixXd State::predict(){
+void State::predict(){
    /*This function takes our previous state x_k_1 and extrapolates it forward in time
    by dt using A which is our state transition matrix yeilding x_kp which is our state prediction
    without measurment correction*/
     matrices::x_kp = matrices::A * matrices::x_k_1;
 }
 
+void State::calculateKalmanGain()
+{
+    /*********************/
+    /* POPULATE R MATRIX */
+    /*********************/
+    Eigen::VectorXd temp(21);
+    temp << 
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        (constants::baseAccel_error+State::calcAccelSystematicError())*matrices::x_m.coeff(0,6),
+        (constants::baseAccel_error+State::calcAccelSystematicError())*matrices::x_m.coeff(0,7),
+        (constants::baseAccel_error+State::calcAccelSystematicError())*matrices::x_m.coeff(0,8),
+        0,
+        0,
+        0,
+        (constants::baseGyro_error+State::calcGyroSystematicError())*matrices::x_m.coeff(0,12),
+        (constants::baseGyro_error+State::calcGyroSystematicError())*matrices::x_m.coeff(0,13),
+        (constants::baseGyro_error+State::calcGyroSystematicError())*matrices::x_m.coeff(0,14),
+        0,
+        0,
+        0,
+        0,
+        0,
+        0;
 
+    matrices::R = temp.transpose()*temp;
+    matrices::K = (matrices::P_kp*matrices::H)*((matrices::H*matrices::P_kp*matrices::H.transpose()+matrices::R).inverse());
+}
 
+void State::processCovarianceMatrix()
+{
+    matrices::P_kp = matrices::A * matrices::P_k_1 * matrices::A.transpose();
+}
 
 void State::updateDynamics()
 {
-    //rest of the kalman filter
-
-    // for the next thread iteration, we want that previous state to be whatever this one is    
-    matrices::x_k_1 = matrices::x_kp;
+    State::dataAq(State::data); // ACQUIRE DATA
+    State::predict(); // 
+    State::processCovarianceMatrix(); //
+    State::calculateKalmanGain(); // CALCULATE KALMAN GAIN
 }
 
 void State::print_mtxd(const Eigen::MatrixXd& X)  

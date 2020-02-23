@@ -11,6 +11,8 @@ namespace constants
 {
     int interval_IMU = 45; // IMU sample rate
     double dt = (double)interval_IMU/(double)1000; // delta t in seconds
+    double baseAccel_error = 0.00015/sqrt(1/dt); // in m/s^2
+    double baseGyro_error = 0.1; // in DPS
 };
 
 namespace matrices
@@ -20,12 +22,13 @@ namespace matrices
     Eigen::MatrixXd P_0(21,21); // Initial Process Covariance Matrix
 
     // VECTORS
-    Eigen::VectorXd x_m(21); /* Observation Vector 9x1 */
-    Eigen::VectorXd x_k(21); /* Final State Vector 21x1 */
-    Eigen::VectorXd x_kp(21); /* State Prediction 21x1 */
-    Eigen::VectorXd x_k_1(21); /* Previous State Vector (K-1) 21x1 */
-    Eigen::VectorXd w_k(21); /* Predicted State Noise 21x1 */
-    Eigen::VectorXd z_k(21); /* Measurement Noise 21x1 */
+    Eigen::VectorXd y(21); /* Corrected Observation Vector */
+    Eigen::VectorXd x_m(21); /* Direct Observation Vector */
+    Eigen::VectorXd x_k(21); /* Final State Vector */
+    Eigen::VectorXd x_kp(21); /* State Prediction */
+    Eigen::VectorXd x_k_1(21); /* Previous State Vector (K-1) */
+    Eigen::VectorXd w_k(21); /* Predicted State Noise */
+    Eigen::VectorXd z_k(21); /* Measurement Noise */
 
     // MATRICES
     // Eigen::MatrixXd C(21,9); /* Observation Transition Matrix*/
@@ -35,6 +38,7 @@ namespace matrices
     Eigen::MatrixXd R(21,21); /* Sensor Covariance Matrix */
     Eigen::MatrixXd H = Eigen::MatrixXd::Zero(21,21); /* H or C matrix, This transitions our state to what we expect our measurements to be
                                 Essentially it deletes all of the elements of our state prediction that can't be measure directly*/
+    Eigen::MatrixXd K(21,21); /* Kalman Gain */
 
     // Identity Matrix
     Eigen::MatrixXd I = Eigen::MatrixXd::Identity(21,21); /* 21x21 Identity Matrix */

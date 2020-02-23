@@ -76,9 +76,12 @@ class State
 
         void dataAq(IMUdata *data);
 
-        Eigen::MatrixXd predict();
-
+        void predict();
+        void processCovarianceMatrix();
+        void calculateKalmanGain();
         void updateDynamics();
+
+
         void print_mtxd(const Eigen::MatrixXd& X); 
 
         float calcAccelSystematicError();
@@ -108,6 +111,8 @@ namespace constants
 {
     extern int interval_IMU;
     extern double dt;
+    extern double baseAccel_error;
+    extern double baseGyro_error;
 };
 
 /* All lower case variables are vectors || all uppercase are Matrices*/
@@ -118,20 +123,23 @@ namespace matrices
     extern Eigen::MatrixXd P_0; // Initial Process Covariance Matrix
 
     // VECTORS
-    extern Eigen::VectorXd x_m; /* Observation Vector 9x1 */
-    extern Eigen::VectorXd x_k; /* Final State Vector 21x1 */
-    extern Eigen::VectorXd x_kp; /* State Prediction 21x1 */
-    extern Eigen::VectorXd x_k_1; /* Previous State Vector (K-1) 21x1 */
-    extern Eigen::VectorXd w_k; /* Predicted State Noise 21x1 */
-    extern Eigen::VectorXd z_k; /* Measurement Noise 21x1 */
+    extern Eigen::VectorXd y; /* Observation Vector */
+    extern Eigen::VectorXd x_m; /* Direct Observation Vector */
+    extern Eigen::VectorXd x_k; /* Final State Vector */
+    extern Eigen::VectorXd x_kp; /* State Prediction */
+    extern Eigen::VectorXd x_k_1; /* Previous State Vector (K-1) */
+    extern Eigen::VectorXd w_k; /* Predicted State Noise */
+    extern Eigen::VectorXd z_k; /* Measurement Noise */
 
-     // MATRICES
+    // MATRICES
     extern Eigen::MatrixXd C; /* Observation Transition Matrix*/
     extern Eigen::MatrixXd A; /* State Transition Matrix */
     extern Eigen::MatrixXd P_kp; /* Predicted Process Covariance */
     extern Eigen::MatrixXd P_k_1; /* Previous Predicted Process Covariance */
     extern Eigen::MatrixXd R; /* Sensor Covariance Matrix */
     extern Eigen::MatrixXd H; /* Observation model mapping matrix*/
+    extern Eigen::MatrixXd K; /* Kalman Gain */
+
     // Identity Matrix
     extern Eigen::MatrixXd I; /* 21x21 Identity Matrix */
  };
