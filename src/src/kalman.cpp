@@ -91,38 +91,62 @@ void State::dataAq(IMUdata *data){
     /*******************************************/
     /* CONVERT ACCELERATION FROM BODY TO EARTH */
     /*******************************************/
+    //Lets check this with how we have the IMU oriented at launch
+    //all in rads/s or rads
     
+    double p =  (data->GYRO[0])*(1-State::calcGyroSystematicError()) * PI/180;//Roll rate
+    double q =  (data->GYRO[1])*(1-State::calcGyroSystematicError()) * PI/180;//Pitch rate
+    double r =  (data->GYRO[2])*(1-State::calcGyroSystematicError()) * PI/180;//Yaw rate
+
+    double phi   = matrices::x_k.coeff(9);     // pulling these euler angles from the last state matrix 
+    double theta = matrices::x_k.coeff(10);   // pulling these euler angles from the last state matrix
+    double psi   = matrices::x_k.coeff(11);   // pulling these euler angles from the last state matrix
+
+    double phi_dot    = p + (q*sin(phi) + r*cos(phi)) * tan(theta);  //These are all of our angular rates relative to earth:  phi dot
+    double theta_dot  = q*cos(phi)-r*sin(phi);                       //These are all of our angular rates relative to earth:  theta dot
+    double psi_dot    = (q*sin(phi)+r*cos(phi))/cos(theta);          //These are all of our angular rates relative to earth:  psi dot
+
     Eigen::VectorXd bodyAccel;
-    bodyAccel << data->LINEAR_ACCEL[0],
-                 data->LINEAR_ACCEL[1],
-                 data->LINEAR_ACCEL[2];
+    bodyAccel <<((data->LINEAR_ACCEL[0])*(1-State::calcAccelSystematicError())), //this is our body accel corrected with systematic error
+                ((data->LINEAR_ACCEL[1])*(1-State::calcAccelSystematicError())), //this is our body accel corrected with systematic error 
+                ((data->LINEAR_ACCEL[2])*(1-State::calcAccelSystematicError())); //this is our body accel corrected with systematic error
+
+    Eigen::VectorXd earthAccel = dcmBodyToEarth( theta + constants::dt * theta_dot,             //This is the standar DCM frame transformation for body to earth using e = Tb
+                                                 phi   + constants::dt *  phi_dot,              //This is the standar DCM frame transformation for body to earth using e = Tb
+                                                 psi   + constants::dt * psi_dot) * bodyAccel;  //This is the standar DCM frame transformation for body to earth using e = Tb 
+
+
+
+    /*******************************************/
+    /*                  END                    */
+    /*******************************************/
 
 
 
 
 
-    matrices::x_m << 
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                data->LINEAR_ACCEL[0],
-                data->LINEAR_ACCEL[1],
-                data->LINEAR_ACCEL[2],
-                0,
-                0,
-                0,
-                data->GYRO[0],
-                data->GYRO[1],
-                data->GYRO[2],
-                0,
-                0,
-                0,
-                data->MAG[0],
-                data->MAG[1],
-                data->MAG[2]; 
+    // matrices::x_m << 
+    //             0,
+    //             0,
+    //             0,
+    //             0,
+    //             0,
+    //             0,
+    //             data->LINEAR_ACCEL[0],
+    //             data->LINEAR_ACCEL[1],
+    //             data->LINEAR_ACCEL[2],
+    //             0,
+    //             0,
+    //             0,
+    //             data->GYRO[0],
+    //             data->GYRO[1],
+    //             data->GYRO[2],
+    //             0,
+    //             0,
+    //             0,
+    //             data->MAG[0],
+    //             data->MAG[1],
+    //             data->MAG[2]; 
 
 
 
@@ -133,15 +157,15 @@ void State::dataAq(IMUdata *data){
                 0,
                 0,
                 0,
-                (data->LINEAR_ACCEL[0])*(1-State::calcAccelSystematicError()),
-                (data->LINEAR_ACCEL[1])*(1-State::calcAccelSystematicError()),
-                (data->LINEAR_ACCEL[2])*(1-State::calcAccelSystematicError()),
+                earthAccel.coeff(0), //EARTH frame acceleration in x
+                earthAccel.coeff(1), //EARTH frame acceleration in y 
+                earthAccel.coeff(2), //EARTH frame acceleration in z
                 0,
                 0,
                 0,
-                (data->GYRO[0])*(1-State::calcGyroSystematicError()),
-                (data->GYRO[1])*(1-State::calcGyroSystematicError()),
-                (data->GYRO[2])*(1-State::calcGyroSystematicError()),
+                phi_dot,   //see above, but yeah this is our omega in x
+                theta_dot, //see above, but yeah this is our omega in y
+                psi_dot,   //see above, but yeah this is our omega in z
                 0,
                 0,
                 0,
@@ -149,6 +173,10 @@ void State::dataAq(IMUdata *data){
                 data->MAG[1],
                 data->MAG[2]; 
 }
+
+
+
+
 
 void State::predict(){
    /*This function takes our previous state x_k_1 and extrapolates it forward in time
