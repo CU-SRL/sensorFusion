@@ -54,19 +54,53 @@ State::State(IMUdata* inputData) : data(inputData)
     matrices::H.block<3,3>(12,12) = I_block;
     matrices::H.block<3,3>(18,18) = I_block;
     
-    State::print_mtxd(matrices::H);
-
+    // State::print_mtxd(matrices::H);
 }
 
 // Destructor
-State::~State()
-{
+State::~State(){}
 
+
+
+
+Eigen::MatrixXd dcmBodyToEarth(double theta, double phi, double psi){
+
+    // theta = theta*PI/180;
+    // phi = phi*PI/180;
+    // psi = psi*PI/180;
+
+    Eigen::MatrixXd DCM;
+    DCM << 
+    cos(theta)*cos(psi), sin(phi)*sin(theta)*cos(psi)-cos(phi)*sin(psi), cos(phi)*sin(theta)*cos(psi)-sin(phi)*sin(psi),
+    cos(theta)*sin(psi), sin(phi)*sin(theta)*sin(psi)-cos(phi)*cos(psi), cos(phi)*sin(theta)*sin(psi)-sin(phi)*cos(psi),
+    sin(theta - PI)        , sin(phi)*cos(theta)                           , cos(phi)*cos(theta)                           ;
+
+    return DCM;
 }
+
+
+
 
 // This is updating our observation vector from out struct of IMU data
     //IMPORTANT--this wont work once we update our sensor suite
 void State::dataAq(IMUdata *data){
+
+
+
+
+    /*******************************************/
+    /* CONVERT ACCELERATION FROM BODY TO EARTH */
+    /*******************************************/
+    
+    Eigen::VectorXd bodyAccel;
+    bodyAccel << data->LINEAR_ACCEL[0],
+                 data->LINEAR_ACCEL[1],
+                 data->LINEAR_ACCEL[2];
+
+
+
+
+
     matrices::x_m << 
                 0,
                 0,
@@ -89,6 +123,8 @@ void State::dataAq(IMUdata *data){
                 data->MAG[0],
                 data->MAG[1],
                 data->MAG[2]; 
+
+
 
     matrices::y << 
                 0,
@@ -134,15 +170,15 @@ void State::calculateKalmanGain()
         0,
         0,
         0,
-        (constants::baseAccel_error+State::calcAccelSystematicError())*matrices::x_m.coeff(0,6),
-        (constants::baseAccel_error+State::calcAccelSystematicError())*matrices::x_m.coeff(0,7),
-        (constants::baseAccel_error+State::calcAccelSystematicError())*matrices::x_m.coeff(0,8),
+        (constants::baseAccel_error),
+        (constants::baseAccel_error),
+        (constants::baseAccel_error),
         0,
         0,
         0,
-        (constants::baseGyro_error+State::calcGyroSystematicError())*matrices::x_m.coeff(0,12),
-        (constants::baseGyro_error+State::calcGyroSystematicError())*matrices::x_m.coeff(0,13),
-        (constants::baseGyro_error+State::calcGyroSystematicError())*matrices::x_m.coeff(0,14),
+        (constants::baseGyro_error),
+        (constants::baseGyro_error),
+        (constants::baseGyro_error),
         0,
         0,
         0,

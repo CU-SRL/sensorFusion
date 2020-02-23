@@ -24,12 +24,13 @@
 // GLOBAL VARIABLES I KNOW BAD... FIX LATER
 DigitalIMU IMU = DigitalIMU(55,0x28);
 IMUdata imu_data;
+State *state = new State(&imu_data);
 
 ThreadController thread_control = ThreadController();
 Thread* ThreadIMU = new Thread(); 
 
 void IMU_LOOP() {
-    IMU.sample(&imu_data); /*!< Sample the IMU by calling the IMU Sample function */
+    IMU.sample(&imu_data, state); /*!< Sample the IMU by calling the IMU Sample function */
 }
 
 void KILLSYSTEM()
@@ -46,17 +47,29 @@ void setup()
 
     Serial.begin(115200); /*!< Start serial comms */
 
+    Serial.println("Hola1");
+
     /* Initialize BNO055 IMU sensor */
     if (!IMU.begin()) {
         KILLSYSTEM();
     }
-    State state(&imu_data);
+
+    Serial.println("Hola2");
 
     ThreadIMU->onRun(IMU_LOOP); /*!< Set the IMU looping function for the ThreadController */
     ThreadIMU->setInterval(constants::interval_IMU); /*!< Set the IMU refresh rate (Interval) */
 
+
     /* Add threads to ThreadController */
     thread_control.add(ThreadIMU);
+
+    // while (1 = 1)
+    // {
+    //     if (sqrt(imu_data.LINEAR_ACCEL[0]^2 + imu_data.LINEAR_ACCEL[1]^2 + imu_data.LINEAR_ACCEL[2]^2) > 20)
+    //     {
+    //         break;
+    //     }  
+    // } 
 }
 
 void loop()

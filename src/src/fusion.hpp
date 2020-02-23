@@ -51,11 +51,12 @@
 *   This structs holds the BNO055 sample at a point in time to be stored and processed.
 */
 struct IMUdata {
-    double GYRO[3] = {0,0,0};             // Gyro in [DPS]
-    double LINEAR_ACCEL[3] = {0,0,0};     // Accelerometer in [m/s^2]
-    double GRAVITY_ACCEL[3] = {0,0,0};    // Accelerometer in [mg]
-    double MAG[3] = {0,0,0};              // Magnetometer in [uT]
-    double Temp = 0;
+    float GYRO[3] = {0,0,0};             // Gyro in [DPS]
+    float LINEAR_ACCEL[3] = {0,0,0};     // Accelerometer in [m/s^2]
+    float GRAVITY_ACCEL[3] = {0,0,0};    // Accelerometer in [mg]
+    float MAG[3] = {0,0,0};              // Magnetometer in [uT]
+    float Quat[4] = {0,0,0,0};           // {w, x, y, z}
+    float Temp = 0;
     uint32_t t = 0;
 
     float phi, theta, psi;                // Roll or phi (X), pitch or theta (Y), and yaw or psi (Z)
@@ -72,8 +73,6 @@ class State
         float accel_error = 0.0;
 
         float gyro_error = 0.0;
-        float gyro_sen = 51566.2;            // = 900 rad/sec
-        float gyro_samp = 0.045;             // seconds
         IMUdata *data;
 
     public:
@@ -86,6 +85,7 @@ class State
         void processCovarianceMatrix();
         void calculateKalmanGain();
         void updateDynamics();
+        void dcmBodyToEarth(double theta, double phi, double psi);
 
 
         void print_mtxd(const Eigen::MatrixXd& X); 
@@ -113,7 +113,7 @@ class DigitalIMU {
         DigitalIMU();
         DigitalIMU(int32_t sensorID, uint8_t address);
         bool begin();
-        void sample(IMUdata* data);
+        void sample(IMUdata* data, State* ptr);
 };
 
 namespace constants
@@ -122,6 +122,7 @@ namespace constants
     extern double dt;
     extern double baseAccel_error;
     extern double baseGyro_error;
+    extern float gyro_sen;           // = 900 rad/sec
 };
 
 /* All lower case variables are vectors || all uppercase are Matrices*/
