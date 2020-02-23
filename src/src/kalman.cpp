@@ -71,12 +71,11 @@ Eigen::MatrixXd dcmBodyToEarth(double theta, double phi, double psi){
 
     Eigen::MatrixXd DCM;
     DCM << 
-
     cos(theta)*cos(psi), sin(phi)*sin(theta)*cos(psi)-cos(phi)*sin(psi), cos(phi)*sin(theta)*cos(psi)-sin(phi)*sin(psi),
     cos(theta)*sin(psi), sin(phi)*sin(theta)*sin(psi)-cos(phi)*cos(psi), cos(phi)*sin(theta)*sin(psi)-sin(phi)*cos(psi),
     sin(theta - PI)        , sin(phi)*cos(theta)                           , cos(phi)*cos(theta)                           ;
 
-return DCM;
+    return DCM;
 }
 
 
@@ -93,10 +92,10 @@ void State::dataAq(IMUdata *data){
     /* CONVERT ACCELERATION FROM BODY TO EARTH */
     /*******************************************/
     
-        Eigen::VectorXd bodyAccel;
-        bodyAccel << data->LINEAR_ACCEL[0],
-                     data->LINEAR_ACCEL[1],
-                     data->LINEAR_ACCEL[2];
+    Eigen::VectorXd bodyAccel;
+    bodyAccel << data->LINEAR_ACCEL[0],
+                 data->LINEAR_ACCEL[1],
+                 data->LINEAR_ACCEL[2];
 
 
 
