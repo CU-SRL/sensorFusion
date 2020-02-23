@@ -72,17 +72,10 @@ void DigitalIMU::sample(IMUdata* data, State *ptr) {
     data->Quat[2] = quat.y();
     data->Quat[3] = quat.z();
 
-    // Serial.printf(" Euler_X: %.5f",(ptr->eulerAngle(data->GYRO[0], constants::gyro_sen, (float)constants::dt)));
-    // Serial.printf(" Euler_Y: %.5f",(ptr->eulerAngle(data->GYRO[1], constants::gyro_sen, (float)constants::dt)));
-    // Serial.printf(" Euler_Z: %.5f\n",(ptr->eulerAngle(data->GYRO[2], constants::gyro_sen, (float)constants::dt)));
-
-
-
     ptr->quaternion(ptr->eulerAngle(data->GYRO[0], constants::gyro_sen, (float)constants::dt), 
                     ptr->eulerAngle(data->GYRO[1], constants::gyro_sen, (float)constants::dt),
                     ptr->eulerAngle(data->GYRO[2], constants::gyro_sen, (float)constants::dt),
                     data->q_w, data->q_x, data->q_y, data->q_z);
-
 
     Serial.printf(" IMU_Quat_W: %.5f",data->Quat[0]);
     Serial.printf(" IMU_Quat_X: %.5f",data->Quat[1]);
