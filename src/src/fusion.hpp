@@ -80,6 +80,7 @@ class State
         void processCovarianceMatrix();
         void calculateKalmanGain();
         void updateDynamics();
+        void dcmBodyToEarth(double theta, double phi, double psi);
 
 
         void print_mtxd(const Eigen::MatrixXd& X); 

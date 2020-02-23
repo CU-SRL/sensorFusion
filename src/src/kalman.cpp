@@ -55,18 +55,53 @@ State::State(IMUdata* inputData) : data(inputData)
     matrices::H.block<3,3>(18,18) = I_block;
     
     // State::print_mtxd(matrices::H);
-
 }
 
 // Destructor
-State::~State()
-{
+State::~State(){}
 
+
+
+
+Eigen::MatrixXd dcmBodyToEarth(double theta, double phi, double psi){
+
+    // theta = theta*PI/180;
+    // phi = phi*PI/180;
+    // psi = psi*PI/180;
+
+    Eigen::MatrixXd DCM;
+    DCM << 
+
+    cos(theta)*cos(psi), sin(phi)*sin(theta)*cos(psi)-cos(phi)*sin(psi), cos(phi)*sin(theta)*cos(psi)-sin(phi)*sin(psi),
+    cos(theta)*sin(psi), sin(phi)*sin(theta)*sin(psi)-cos(phi)*cos(psi), cos(phi)*sin(theta)*sin(psi)-sin(phi)*cos(psi),
+    sin(theta - PI)        , sin(phi)*cos(theta)                           , cos(phi)*cos(theta)                           ;
+
+return DCM;
 }
+
+
+
 
 // This is updating our observation vector from out struct of IMU data
     //IMPORTANT--this wont work once we update our sensor suite
 void State::dataAq(IMUdata *data){
+
+
+
+
+    /*******************************************/
+    /* CONVERT ACCELERATION FROM BODY TO EARTH */
+    /*******************************************/
+    
+        Eigen::VectorXd bodyAccel;
+        bodyAccel << data->LINEAR_ACCEL[0],
+                     data->LINEAR_ACCEL[1],
+                     data->LINEAR_ACCEL[2];
+
+
+
+
+
     matrices::x_m << 
                 0,
                 0,
@@ -89,6 +124,8 @@ void State::dataAq(IMUdata *data){
                 data->MAG[0],
                 data->MAG[1],
                 data->MAG[2]; 
+
+
 
     matrices::y << 
                 0,
