@@ -38,6 +38,24 @@ State::State(IMUdata* inputData) : data(inputData)
     matrices::A.block<3,3>(15,12) = delta_t_3;
 
     // State::print_mtxd(matrices::A);
+
+/************************************************************************************/
+
+    /*********************/
+    /* POPULATE H MATRIX */
+    /*********************/
+
+     Eigen::Matrix3d I_block; //block of 3x3 indentity that will make populating H (the obvervation mapping matrix) way easier
+     I_block <<  1, 0, 0,
+                0, 1, 0,
+                0, 0, 1;
+    //Inserting Identity blocks
+    matrices::H.block<3,3>(6,6) = I_block;
+    matrices::H.block<3,3>(12,12) = I_block;
+    matrices::H.block<3,3>(18,18) = I_block;
+    
+    // State::print_mtxd(matrices::H);
+
 }
 
 // Destructor
@@ -49,27 +67,39 @@ State::~State()
 // This is updating our observation vector from out struct of IMU data
     //IMPORTANT--this wont work once we update our sensor suite
 void State::dataAq(IMUdata *data){
-    matrices::x_m << data->LINEAR_ACCEL[0],
+    matrices::x_m << 
+                
+                 0,
+                 0,
+                 0,
+                 0,
+                 0,
+                 0,
+                 data->LINEAR_ACCEL[0],
                  data->LINEAR_ACCEL[1],
                  data->LINEAR_ACCEL[2],
+                 0,
+                 0,
+                 0,
                  data->GYRO[0],
                  data->GYRO[1],
                  data->GYRO[2],
+                 0,
+                 0,
+                 0,
                  data->MAG[0],
                  data->MAG[1],
                  data->MAG[2];   
 }
 
-
-
 Eigen::MatrixXd State::predict(){
-    //x should already be defined
-
-    //
-
- //Prediction step x = Ax
+   /*This function takes our previous state x_k_1 and extrapolates it forward in time
+   by dt using A which is our state transition matrix yeilding x_kp which is our state prediction
+   without measurment correction*/
     matrices::x_kp = matrices::A * matrices::x_k_1;
 }
+
+
 
 
 void State::updateDynamics()
