@@ -51,12 +51,16 @@
 *   This structs holds the BNO055 sample at a point in time to be stored and processed.
 */
 struct IMUdata {
-    double GYRO[3] = {0,0,0}; // Gyro in [DPS]
-    double LINEAR_ACCEL[3] = {0,0,0}; // Accelerometer in [m/s^2]
-    double GRAVITY_ACCEL[3] = {0,0,0}; // Accelerometer in [mg]
-    double MAG[3] = {0,0,0}; // Magnetometer in [uT]
-    double Temp = 0;
+    float GYRO[3] = {0,0,0};             // Gyro in [DPS]
+    float LINEAR_ACCEL[3] = {0,0,0};     // Accelerometer in [m/s^2]
+    float GRAVITY_ACCEL[3] = {0,0,0};    // Accelerometer in [mg]
+    float MAG[3] = {0,0,0};              // Magnetometer in [uT]
+    float Quat[4] = {0,0,0,0};           // {w, x, y, z}
+    float Temp = 0;
     uint32_t t = 0;
+
+    float phi, theta, psi;                // Roll or phi (X), pitch or theta (Y), and yaw or psi (Z)
+    float q_w, q_x, q_y, q_z;             // Quaternion
 };
 
 //! Main State Estimation Class
@@ -67,6 +71,7 @@ class State
 {
     private:
         float accel_error = 0.0;
+
         float gyro_error = 0.0;
         IMUdata *data;
 
@@ -88,6 +93,9 @@ class State
         float calcAccelSystematicError();
         float calcGyroSystematicError();
 
+        float eulerAngle(float GYRO, float gyro_sen, float gyro_samp); // Function to compute Euler angle
+        void quaternion(float phi, float theta, float psi, float &q_w, float &q_x, float &q_y, float &q_z); // Function to computer Quaternion
+
     protected:
 };
 
@@ -105,7 +113,7 @@ class DigitalIMU {
         DigitalIMU();
         DigitalIMU(int32_t sensorID, uint8_t address);
         bool begin();
-        void sample(IMUdata* data);
+        void sample(IMUdata* data, State* ptr);
 };
 
 namespace constants
@@ -114,6 +122,7 @@ namespace constants
     extern double dt;
     extern double baseAccel_error;
     extern double baseGyro_error;
+    extern float gyro_sen;           // = 900 rad/sec
 };
 
 /* All lower case variables are vectors || all uppercase are Matrices*/
