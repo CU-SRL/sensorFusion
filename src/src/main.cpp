@@ -24,7 +24,7 @@
 // GLOBAL VARIABLES I KNOW BAD... FIX LATER
 DigitalIMU IMU = DigitalIMU(55,0x28);
 IMUdata imu_data;
-State *state = new State(&imu_data);
+State *state;
 
 ThreadController thread_control = ThreadController();
 Thread* ThreadIMU = new Thread(); 
@@ -53,6 +53,8 @@ void setup()
     if (!IMU.begin()) {
         KILLSYSTEM();
     }
+
+    state = new State(&imu_data);
 
     Serial.println("Hola2");
 
