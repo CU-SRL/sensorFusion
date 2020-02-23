@@ -171,15 +171,15 @@ void State::calculateKalmanGain()
         0,
         0,
         0,
-        (constants::baseAccel_error+State::calcAccelSystematicError())*matrices::x_m.coeff(0,6),
-        (constants::baseAccel_error+State::calcAccelSystematicError())*matrices::x_m.coeff(0,7),
-        (constants::baseAccel_error+State::calcAccelSystematicError())*matrices::x_m.coeff(0,8),
+        (constants::baseAccel_error),
+        (constants::baseAccel_error),
+        (constants::baseAccel_error),
         0,
         0,
         0,
-        (constants::baseGyro_error+State::calcGyroSystematicError())*matrices::x_m.coeff(0,12),
-        (constants::baseGyro_error+State::calcGyroSystematicError())*matrices::x_m.coeff(0,13),
-        (constants::baseGyro_error+State::calcGyroSystematicError())*matrices::x_m.coeff(0,14),
+        (constants::baseGyro_error),
+        (constants::baseGyro_error),
+        (constants::baseGyro_error),
         0,
         0,
         0,
@@ -200,7 +200,7 @@ void State::updateDynamics()
 {
     State::dataAq(State::data); // ACQUIRE DATA
     State::predict(); // 
-    State::processCovarianceMatrix(); //
+    State::processCovarianceMatrix(); // 
     State::calculateKalmanGain(); // CALCULATE KALMAN GAIN
 }
 
