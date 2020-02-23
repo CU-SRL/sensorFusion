@@ -123,7 +123,7 @@ namespace matrices
     extern Eigen::MatrixXd P_kp; /* Predicted Process Covariance */
     extern Eigen::MatrixXd P_k_1; /* Previous Predicted Process Covariance */
     extern Eigen::MatrixXd R; /* Sensor Covariance Matrix */
-
+    extern Eigen::MatrixXd H; /* Observation model mapping matrix*/
     // Identity Matrix
     extern Eigen::MatrixXd I; /* 21x21 Identity Matrix */
  };
