@@ -198,10 +198,14 @@ void State::calculateKalmanGain()
 
     Serial.println("R");
     State::print_mtxd(matrices::R);
-    Serial.println("P_kp*H");
-    State::print_mtxd(matrices::P_kp*matrices::H);
-    Serial.println("Inverse");
-    State::print_mtxd((matrices::H*matrices::P_kp*matrices::H.transpose()+matrices::R).inverse());
+    Serial.println("P_kp");
+    State::print_mtxd(matrices::P_kp);
+    Serial.println("H");
+    State::print_mtxd(matrices::H);
+
+    while(true)
+    {
+    }
 
     matrices::K = (matrices::P_kp*matrices::H)*((matrices::H*matrices::P_kp*matrices::H.transpose()+matrices::R).inverse());
 }
