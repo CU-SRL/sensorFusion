@@ -59,7 +59,7 @@ void DigitalIMU::sample(IMUdata* data, State *ptr) {
 
 
     data->Temp = board.getTemp();
-    Serial.printf("\n");
+    // Serial.printf("\n");
 
     // Serial.printf(" GYRO: %.5f",data->GYRO[0]);
     // Serial.printf(" GYRO: %.5f",data->GYRO[1]);
@@ -77,14 +77,14 @@ void DigitalIMU::sample(IMUdata* data, State *ptr) {
                     ptr->eulerAngle(data->GYRO[2], constants::gyro_sen, (float)constants::dt),
                     data->q_w, data->q_x, data->q_y, data->q_z);
 
-    Serial.printf(" IMU_Quat_W: %.5f",data->Quat[0]);
-    Serial.printf(" IMU_Quat_X: %.5f",data->Quat[1]);
-    Serial.printf(" IMU_Quat_Y: %.5f",data->Quat[2]);
-    Serial.printf(" IMU_Quat_Z: %.5f\n",data->Quat[3]);
-    Serial.printf(" Quat_W:     %.5f",data->q_w);
-    Serial.printf(" Quat_X:     %.5f",data->q_x);
-    Serial.printf(" Quat_Y:     %.5f",data->q_y);
-    Serial.printf(" Quat_Z:     %.5f\n",data->q_z);
+    // Serial.printf(" IMU_Quat_W: %.5f",data->Quat[0]);
+    // Serial.printf(" IMU_Quat_X: %.5f",data->Quat[1]);
+    // Serial.printf(" IMU_Quat_Y: %.5f",data->Quat[2]);
+    // Serial.printf(" IMU_Quat_Z: %.5f\n",data->Quat[3]);
+    // Serial.printf(" Quat_W:     %.5f",data->q_w);
+    // Serial.printf(" Quat_X:     %.5f",data->q_x);
+    // Serial.printf(" Quat_Y:     %.5f",data->q_y);
+    // Serial.printf(" Quat_Z:     %.5f\n",data->q_z);
 
     data->t = millis();
 }

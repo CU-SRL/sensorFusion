@@ -18,18 +18,18 @@
 #define v_x_0 0 // initial velocity in the x direction
 #define v_y_0 0 // initial velocity in the y direction
 #define v_z_0 0 // initial velocity in the z direction
-#define a_x_0 0 // initial acceleration in x direction
-#define a_y_0 0 // initial acceleration in y direction
-#define a_z_0 0 // initial acceleration in z direction
+#define a_x_0 0.00001 // initial acceleration in x direction
+#define a_y_0 0.00001 // initial acceleration in y direction
+#define a_z_0 0.00001 // initial acceleration in z direction
 #define theta_x_0 0 // initial attitude in the x direction
 #define theta_y_0 0 // initial attitude in the y direction
 #define theta_z_0 0 // initial attitude in the z direction
 #define omega_x_0 0 // initial angular velocity in the x direction
 #define omega_y_0 0 // initial angular velocity in the y direction
 #define omega_z_0 0 // initial angular velocity in the z direction
-#define alpha_x_0 0 // initial angular acceleration in the x direction
-#define alpha_y_0 0 // initial angular acceleration in the y direction
-#define alpha_z_0 0 // initial angular acceleration in the z direction
+#define alpha_x_0 0.00001 // initial angular acceleration in the x direction
+#define alpha_y_0 0.00001 // initial angular acceleration in the y direction
+#define alpha_z_0 0.00001 // initial angular acceleration in the z direction
 #define mag_x_0 0 //  nitial expected magnetic field reading in the x direction
 #define mag_y_0 0 // initial expected magnetic field reading in the y direction
 #define mag_z_0 0 // initial expected magnetic field reading in the z direction
@@ -98,6 +98,7 @@ class State
 
         float gyro_error = 0.0;
         IMUdata *data;
+        int count = 0;
 
     public:
         State(IMUdata*);

@@ -37,9 +37,9 @@ namespace matrices
     Eigen::MatrixXd P_kp(21,21); /* Predicted Process Covariance */
     Eigen::MatrixXd P_k_1(21,21); /* Previous Predicted Process Covariance */
     Eigen::MatrixXd R(21,21); /* Sensor Covariance Matrix */
-    Eigen::MatrixXd H = Eigen::MatrixXd::Zero(21,21); /* H or C matrix, This transitions our state to what we expect our measurements to be
-                                Essentially it deletes all of the elements of our state prediction that can't be measure directly*/
-    Eigen::MatrixXd K(21,21); /* Kalman Gain */
+    Eigen::MatrixXd H = Eigen::MatrixXd::Zero(6,21); /* H or C matrix, This transitions our state to what we expect our measurements to be
+                                Essentially it deletes all of the elements of our state prediction that can't be measure directly */
+    Eigen::MatrixXd K(21,6); /* Kalman Gain */
 
     // Identity Matrix
     Eigen::MatrixXd I = Eigen::MatrixXd::Identity(21,21); /* 21x21 Identity Matrix */
