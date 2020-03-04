@@ -21,7 +21,8 @@ State::State(IMUdata* inputData) : data(inputData)
                  0, 0, f;
 
     Eigen::Matrix3d delta_t_3; // 1/(delta t) diagonal
-    f = 1/(constants::dt);
+    // f = 1/(constants::dt);
+    f = 0;
     delta_t_3 << f, 0, 0,
                  0, f, 0,
                  0, 0, f;
@@ -50,9 +51,9 @@ State::State(IMUdata* inputData) : data(inputData)
                 0, 1, 0,
                 0, 0, 1;
     //Inserting Identity blocks
-    matrices::H.block<3,3>(6,6) = I_block;
-    matrices::H.block<3,3>(12,12) = I_block;
-    matrices::H.block<3,3>(18,18) = I_block;
+    matrices::H.block<3,3>(0,6) = I_block;
+    matrices::H.block<3,3>(3,12) = I_block;
+    // matrices::H.block<3,3>(6,18) = I_block;
     
     // State::print_mtxd(matrices::H);
 }
@@ -94,13 +95,27 @@ void State::dataAq(IMUdata *data){
     double q =  (data->GYRO[1])*(1-State::calcGyroSystematicError()) * PI/180;//Pitch rate
     double r =  (data->GYRO[2])*(1-State::calcGyroSystematicError()) * PI/180;//Yaw rate
 
-    double phi   = matrices::x_k.coeff(9);     // pulling these euler angles from the last state matrix 
-    double theta = matrices::x_k.coeff(10);   // pulling these euler angles from the last state matrix
-    double psi   = matrices::x_k.coeff(11);   // pulling these euler angles from the last state matrix
+    // Serial.print(p);
+    // Serial.print(" ");
+    // Serial.print(q);
+    // Serial.print(" ");
+    // Serial.print(r);
+    // Serial.println(" ");
+
+    double phi   = matrices::x_k_1.coeff(9);     // pulling these euler angles from the last state matrix 
+    double theta = matrices::x_k_1.coeff(10);   // pulling these euler angles from the last state matrix
+    double psi   = matrices::x_k_1.coeff(11);   // pulling these euler angles from the last state matrix
 
     double phi_k1 = 0.0;    //  Phi at K+1
     double theta_k1 = 0.0;  //  Theta at K+1
     double psi_k1 = 0.0;    // PSI at K+1
+
+    // Serial.print(phi);
+    // Serial.print(" ");
+    // Serial.print(theta);
+    // Serial.print(" ");
+    // Serial.print(psi);
+    // Serial.print(" ");
 
     double phi_dot    = p + (q*sin(phi) + r*cos(phi)) * tan(theta);  //These are all of our angular rates relative to earth:  phi dot
     double theta_dot  = q*cos(phi)-r*sin(phi);                       //These are all of our angular rates relative to earth:  theta dot
@@ -112,7 +127,7 @@ void State::dataAq(IMUdata *data){
     // Serial.print(" ");
     // Serial.println(psi_dot);
 
-    Eigen::VectorXd bodyAccel(3);
+    Eigen::VectorXd bodyAccel(3); // BODY ACCEL
     bodyAccel <<((data->LINEAR_ACCEL[0])*(1-State::calcAccelSystematicError())), //this is our body accel corrected with systematic error
                 ((data->LINEAR_ACCEL[1])*(1-State::calcAccelSystematicError())), //this is our body accel corrected with systematic error 
                 ((data->LINEAR_ACCEL[2])*(1-State::calcAccelSystematicError())); //this is our body accel corrected with systematic error
@@ -121,14 +136,24 @@ void State::dataAq(IMUdata *data){
     phi_k1 = phi+constants::dt*phi_dot;        //This is the standar DCM frame transformation for body to earth using e = Tb
     psi_k1 = psi+constants::dt*psi_dot;        //This is the standar DCM frame transformation for body to earth using e = Tb
 
+    // Serial.print(theta_k1);
+    // Serial.print(" ");
+    // Serial.print(phi_k1);
+    // Serial.print(" ");
+    // Serial.println(psi_k1);
+
     Eigen::Matrix3d DCM;
     DCM << 
     cos(theta_k1)*cos(psi_k1), sin(phi_k1)*sin(theta_k1)*cos(psi_k1)-cos(phi_k1)*sin(psi_k1), cos(phi_k1)*sin(theta_k1)*cos(psi_k1)-sin(phi_k1)*sin(psi_k1),
     cos(theta_k1)*sin(psi_k1), sin(phi_k1)*sin(theta_k1)*sin(psi_k1)-cos(phi_k1)*cos(psi_k1), cos(phi_k1)*sin(theta_k1)*sin(psi_k1)-sin(phi_k1)*cos(psi_k1),
     sin(theta_k1 - PI)       , sin(phi_k1)*cos(theta_k1)                                    , cos(phi_k1)*cos(theta_k1);
 
+    // State::print_mtxd(DCM);
+
     Eigen::VectorXd earthAccel(3);
     earthAccel << DCM*bodyAccel;
+
+    // State::print_mtxd(bodyAccel);
 
     matrices::y << 
                 0,
@@ -152,6 +177,7 @@ void State::dataAq(IMUdata *data){
                 data->MAG[0],
                 data->MAG[1],
                 data->MAG[2];
+    // State::print_mtxd(matrices::y);
 }
 
 
@@ -196,29 +222,31 @@ void State::calculateKalmanGain()
 
     matrices::R = temp*temp.transpose();
 
-    Serial.println("R");
-    State::print_mtxd(matrices::R);
-    Serial.println("P_kp");
-    State::print_mtxd(matrices::P_kp);
-    Serial.println("H");
-    State::print_mtxd(matrices::H);
+    // Serial.println("R");
+    // State::print_mtxd(matrices::R);
+    // Serial.println("P_kp");
+    // State::print_mtxd(matrices::P_kp);
+    // Serial.println("H");
+    // State::print_mtxd(matrices::H);
 
-    while(true)
-    {
-    }
-
-    matrices::K = (matrices::P_kp*matrices::H)*((matrices::H*matrices::P_kp*matrices::H.transpose()+matrices::R).inverse());
+    matrices::K = matrices::P_kp*(matrices::H.transpose())*(matrices::H*(matrices::P_kp+matrices::R)*(matrices::H.transpose())).inverse();
+    // State::print_mtxd(matrices::K);
 }
 
 void State::processCovarianceMatrix()
 {
-    matrices::P_kp = matrices::A * matrices::P_k_1 * matrices::A.transpose();
+    Eigen::MatrixXd randM = Eigen::MatrixXd::Random(21,21);
+    randM = (randM + Eigen::MatrixXd::Constant(21,21,0.5))*0.25;
+    // Serial.println("randM");
+    // State::print_mtxd(randM);
+    matrices::P_kp = (matrices::A * matrices::P_k_1 * matrices::A.transpose()) + randM;
+    // Serial.println("P_kp");
+    // State::print_mtxd(matrices::P_kp);
 }
 
 void State::stateDetermination()
 {
-    // matrices::x_k = matrices::x_kp+matrices::K*(matrices::y-(matrices::H*matrices::x_kp));
-    matrices::x_k = matrices::K*matrices::y;
+    matrices::x_k = matrices::x_kp+matrices::K*matrices::H*(matrices::y-matrices::x_kp);
     // Serial.println("K");
     // State::print_mtxd(matrices::K);
     // Serial.println("y");
@@ -237,12 +265,14 @@ void State::updateProcessCovarianceMatrix()
 
 void State::updateDynamics()
 {
+    // Serial.println("P_O");
+    // State::print_mtxd(matrices::P_0);
     State::dataAq(State::data); // ACQUIRE DATA
     State::predict(); // 
     State::processCovarianceMatrix(); //
     State::calculateKalmanGain(); // CALCULATE KALMAN GAIN
     State::stateDetermination();
-    //State::print_mtxd(matrices::x_k);
+    State::print_mtxd(matrices::x_k);
     State::updatePreviousState();
     State::updateProcessCovarianceMatrix();
 }

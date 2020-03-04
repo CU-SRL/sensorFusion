@@ -18,44 +18,44 @@
 #define v_x_0 0 // initial velocity in the x direction
 #define v_y_0 0 // initial velocity in the y direction
 #define v_z_0 0 // initial velocity in the z direction
-#define a_x_0 0 // initial acceleration in x direction
-#define a_y_0 0 // initial acceleration in y direction
-#define a_z_0 0 // initial acceleration in z direction
+#define a_x_0 0.00001 // initial acceleration in x direction
+#define a_y_0 0.00001 // initial acceleration in y direction
+#define a_z_0 0.00001 // initial acceleration in z direction
 #define theta_x_0 0 // initial attitude in the x direction
 #define theta_y_0 0 // initial attitude in the y direction
 #define theta_z_0 0 // initial attitude in the z direction
 #define omega_x_0 0 // initial angular velocity in the x direction
 #define omega_y_0 0 // initial angular velocity in the y direction
 #define omega_z_0 0 // initial angular velocity in the z direction
-#define alpha_x_0 0 // initial angular acceleration in the x direction
-#define alpha_y_0 0 // initial angular acceleration in the y direction
-#define alpha_z_0 0 // initial angular acceleration in the z direction
+#define alpha_x_0 0.00001 // initial angular acceleration in the x direction
+#define alpha_y_0 0.00001 // initial angular acceleration in the y direction
+#define alpha_z_0 0.00001 // initial angular acceleration in the z direction
 #define mag_x_0 0 //  nitial expected magnetic field reading in the x direction
 #define mag_y_0 0 // initial expected magnetic field reading in the y direction
 #define mag_z_0 0 // initial expected magnetic field reading in the z direction
 
 
-#define p_x_x_0 0.1 //initial position variance in x direction
-#define p_x_y_0 0.1 //initial position variance in y direction
-#define p_x_z_0 0.1 //initial position variance in z direction
-#define p_v_x_0 0.1 // initial velocity variance in the x direction
-#define p_v_y_0 0.1 // initial velocity variance in the y direction
-#define p_v_z_0 0.1 // initial velocity variance in the z direction
-#define p_a_x_0 0.01 // initial acceleration variance in x direction
-#define p_a_y_0 0.01 // initial acceleration variance in y direction
-#define p_a_z_0 0.01 // initial acceleration variance in z direction
-#define p_theta_x_0 0.1 // initial attitude variance in the x direction
-#define p_theta_y_0 0.1 // initial attitude variance in the y direction
-#define p_theta_z_0 0.1 // initial attitude variance in the z direction
-#define p_omega_x_0 0.1 // initial angular velocity variance in the x direction
-#define p_omega_y_0 0.1 // initial angular velocity variance in the y direction
-#define p_omega_z_0 0.1 // initial angular velocity variance in the z direction
-#define p_alpha_x_0 0.01 // initial angular acceleration variance in the x direction
-#define p_alpha_y_0 0.01 // initial angular acceleration variance in the y direction
-#define p_alpha_z_0 0.01 // initial angular acceleration variance in the z direction
-#define p_mag_x_0 0 // initial expected magnetic field reading variance in the x direction
-#define p_mag_y_0 0 // initial expected magnetic field reading variance in the y direction
-#define p_mag_z_0 0 // initial expected magnetic field reading variance in the z direction
+#define p_x_x_0 1.11 //initial position variance in x direction
+#define p_x_y_0 1.12 //initial position variance in y direction
+#define p_x_z_0 1.13 //initial position variance in z direction
+#define p_v_x_0 1.14 // initial velocity variance in the x direction
+#define p_v_y_0 1.15 // initial velocity variance in the y direction
+#define p_v_z_0 1.16 // initial velocity variance in the z direction
+#define p_a_x_0 1.017 // initial acceleration variance in x direction
+#define p_a_y_0 1.018 // initial acceleration variance in y direction
+#define p_a_z_0 1.019 // initial acceleration variance in z direction
+#define p_theta_x_0 1.12 // initial attitude variance in the x direction
+#define p_theta_y_0 1.13 // initial attitude variance in the y direction
+#define p_theta_z_0 1.14 // initial attitude variance in the z direction
+#define p_omega_x_0 1.15// initial angular velocity variance in the x direction
+#define p_omega_y_0 1.16 // initial angular velocity variance in the y direction
+#define p_omega_z_0 1.17 // initial angular velocity variance in the z direction
+#define p_alpha_x_0 1.018 // initial angular acceleration variance in the x direction
+#define p_alpha_y_0 1.019 // initial angular acceleration variance in the y direction
+#define p_alpha_z_0 1.018 // initial angular acceleration variance in the z direction
+#define p_mag_x_0 1.022 // initial expected magnetic field reading variance in the x direction
+#define p_mag_y_0 1.021 // initial expected magnetic field reading variance in the y direction
+#define p_mag_z_0 1.0269 // initial expected magnetic field reading variance in the z direction
 
 
 ///////////////////////////////////////////////////////////
@@ -98,6 +98,7 @@ class State
 
         float gyro_error = 0.0;
         IMUdata *data;
+        int count = 0;
 
     public:
         State(IMUdata*);

@@ -92,49 +92,73 @@ void setup()
                     mag_x_0,
                     mag_y_0,
                     mag_z_0;
+    Eigen::VectorXd tempP(21);
+    tempP << 
+                p_x_x_0,
+                p_x_y_0,
+                p_x_z_0,
+                p_v_x_0,
+                p_v_y_0,
+                p_v_z_0,
+                p_a_x_0,
+                p_a_y_0,
+                p_a_z_0,
+                p_theta_x_0,
+                p_theta_y_0,
+                p_theta_z_0,
+                p_omega_x_0,
+                p_omega_y_0,
+                p_omega_z_0,
+                p_alpha_x_0,
+                p_alpha_y_0,
+                p_alpha_z_0,
+                p_mag_x_0,
+                p_mag_y_0,
+                p_mag_z_0;
+    matrices::P_0 = tempP*tempP.transpose();
 
-    Eigen::Matrix3d p;
-    double x = p_x_x_0;
-    p << pow(x,2), 0, 0,
-         0, pow(x,2), 0,
-         0, 0, pow(x,2);
-    matrices::P_0.block<3,3>(0,0) = p;
+    // Eigen::Matrix3d p;
+    // double x = p_x_x_0;
+    // p << pow(x,2), 0, 0,
+    //      0, pow(x,2), 0,
+    //      0, 0, pow(x,2);
+    // matrices::P_0.block<3,3>(0,0) = p;
 
-    double v = p_v_x_0;
-    p << pow(v,2), 0, 0,
-         0, pow(v,2), 0,
-         0, 0, pow(v,2);
-    matrices::P_0.block<3,3>(3,3) = p;
+    // double v = p_v_x_0;
+    // p << pow(v,2), 0, 0,
+    //      0, pow(v,2), 0,
+    //      0, 0, pow(v,2);
+    // matrices::P_0.block<3,3>(3,3) = p;
 
-    double a = p_a_x_0;
-    p << pow(a,2), 0, 0,
-         0, pow(a,2), 0,
-         0, 0, pow(a,2);
-    matrices::P_0.block<3,3>(6,6) = p;
+    // double a = p_a_x_0;
+    // p << pow(a,2), 0, 0,
+    //      0, pow(a,2), 0,
+    //      0, 0, pow(a,2);
+    // matrices::P_0.block<3,3>(6,6) = p;
 
-    double theta = p_theta_x_0;
-    p << pow(theta,2), 0, 0,
-         0, pow(theta,2), 0,
-         0, 0, pow(theta,2);
-    matrices::P_0.block<3,3>(9,9) = p;
+    // double theta = p_theta_x_0;
+    // p << pow(theta,2), 0, 0,
+    //      0, pow(theta,2), 0,
+    //      0, 0, pow(theta,2);
+    // matrices::P_0.block<3,3>(9,9) = p;
 
-    double omega = p_omega_x_0;
-    p << pow(omega,2), 0, 0,
-         0, pow(omega,2), 0,
-         0, 0, pow(omega,2);
-    matrices::P_0.block<3,3>(12,12) = p;
+    // double omega = p_omega_x_0;
+    // p << pow(omega,2), 0, 0,
+    //      0, pow(omega,2), 0,
+    //      0, 0, pow(omega,2);
+    // matrices::P_0.block<3,3>(12,12) = p;
 
-    double alpha = p_alpha_x_0;
-    p << pow(alpha,2), 0, 0,
-         0, pow(alpha,2), 0,
-         0, 0, pow(alpha,2);
-    matrices::P_0.block<3,3>(15,15) = p;
+    // double alpha = p_alpha_x_0;
+    // p << pow(alpha,2), 0, 0,
+    //      0, pow(alpha,2), 0,
+    //      0, 0, pow(alpha,2);
+    // matrices::P_0.block<3,3>(15,15) = p;
 
-    double mag = p_mag_x_0;
-    p << pow(mag,2), 0, 0,
-         0, pow(mag,2), 0,
-         0, 0, pow(mag,2);
-    matrices::P_0.block<3,3>(18,18) = p;
+    // double mag = p_mag_x_0;
+    // p << pow(mag,2), 0, 0,
+    //      0, pow(mag,2), 0,
+    //      0, 0, pow(mag,2);
+    // matrices::P_0.block<3,3>(18,18) = p;
 
     matrices::x_k_1 = matrices::x_0;
     matrices::P_k_1 = matrices::P_0;
