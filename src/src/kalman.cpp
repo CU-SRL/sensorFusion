@@ -196,31 +196,7 @@ void State::calculateKalmanGain()
     /*********************/
     /* POPULATE R MATRIX */
     /*********************/
-    Eigen::VectorXd temp(21);
-    temp << 
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        (constants::baseAccel_error),
-        (constants::baseAccel_error),
-        (constants::baseAccel_error),
-        0,
-        0,
-        0,
-        (constants::baseGyro_error),
-        (constants::baseGyro_error),
-        (constants::baseGyro_error),
-        0,
-        0,
-        0,
-        0,
-        0,
-        0;
-
-    matrices::R = temp*temp.transpose();
+    
 
     // Serial.println("R");
     // State::print_mtxd(matrices::R);
@@ -235,8 +211,8 @@ void State::calculateKalmanGain()
 
 void State::processCovarianceMatrix()
 {
-    Eigen::MatrixXd randM = Eigen::MatrixXd::Random(21,21);
-    randM = (randM + Eigen::MatrixXd::Constant(21,21,0.5))*0.25;
+    Eigen::MatrixXd randM = Eigen::MatrixXd::Random(21,21)*0.25;
+    // randM = (randM + Eigen::MatrixXd::Constant(21,21,0.5))*0.25;
     // Serial.println("randM");
     // State::print_mtxd(randM);
     matrices::P_kp = (matrices::A * matrices::P_k_1 * matrices::A.transpose()) + randM;

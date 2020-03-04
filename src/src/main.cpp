@@ -117,6 +117,32 @@ void setup()
                 p_mag_z_0;
     matrices::P_0 = tempP*tempP.transpose();
 
+    Eigen::VectorXd temp(21);
+    temp << 
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        (constants::baseAccel_error),
+        (constants::baseAccel_error),
+        (constants::baseAccel_error),
+        0,
+        0,
+        0,
+        (constants::baseGyro_error),
+        (constants::baseGyro_error),
+        (constants::baseGyro_error),
+        0,
+        0,
+        0,
+        0,
+        0,
+        0;
+
+    matrices::R = temp*temp.transpose();
+
     // Eigen::Matrix3d p;
     // double x = p_x_x_0;
     // p << pow(x,2), 0, 0,
