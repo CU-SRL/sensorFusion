@@ -128,9 +128,24 @@ void State::dataAq(IMUdata *data){
     // Serial.println(psi_dot);
 
     Eigen::VectorXd bodyAccel(3); // BODY ACCEL
-    bodyAccel <<((data->LINEAR_ACCEL[0])*(1-State::calcAccelSystematicError())), //this is our body accel corrected with systematic error
-                ((data->LINEAR_ACCEL[1])*(1-State::calcAccelSystematicError())), //this is our body accel corrected with systematic error 
-                ((data->LINEAR_ACCEL[2])*(1-State::calcAccelSystematicError())); //this is our body accel corrected with systematic error
+    // bodyAccel <<((data->LINEAR_ACCEL[0])*(1-State::calcAccelSystematicError())), //this is our body accel corrected with systematic error
+    //             ((data->LINEAR_ACCEL[1])*(1-State::calcAccelSystematicError())), //this is our body accel corrected with systematic error 
+    //             ((data->LINEAR_ACCEL[2])*(1-State::calcAccelSystematicError())); //this is our body accel corrected with systematic error
+
+    bodyAccel <<(data->LINEAR_ACCEL[0]), //this is our body accel WITHOUT systematic error correction
+                (data->LINEAR_ACCEL[1]), //this is our body accel WITHOUT systematic error correction
+                (data->LINEAR_ACCEL[2]); //this is our body accel WITHOUT systematic error correction
+
+    // bodyAccel << 0,
+    //             0,
+    //             0;
+
+    // Serial.println("Raw:");
+    // Serial.println(data->LINEAR_ACCEL[0]);
+    // Serial.println(data->LINEAR_ACCEL[1]);
+    // Serial.println(data->LINEAR_ACCEL[2]);
+    // Serial.println("Correction:");
+    // Serial.println(1-State::calcAccelSystematicError());
 
     theta_k1 = theta+constants::dt*theta_dot;  //This is the standar DCM frame transformation for body to earth using e = Tb
     phi_k1 = phi+constants::dt*phi_dot;        //This is the standar DCM frame transformation for body to earth using e = Tb
@@ -151,7 +166,10 @@ void State::dataAq(IMUdata *data){
     // State::print_mtxd(DCM);
 
     Eigen::VectorXd earthAccel(3);
-    earthAccel << DCM*bodyAccel;
+    // earthAccel << DCM*bodyAccel;
+
+    // BYPASS DCM
+    earthAccel << bodyAccel;
 
     // State::print_mtxd(bodyAccel);
 
@@ -177,7 +195,7 @@ void State::dataAq(IMUdata *data){
                 data->MAG[0],
                 data->MAG[1],
                 data->MAG[2];
-    // State::print_mtxd(matrices::y);
+     // State::print_mtxd(matrices::y);
 }
 
 
@@ -211,8 +229,10 @@ void State::calculateKalmanGain()
 
 void State::processCovarianceMatrix()
 {
-    Eigen::MatrixXd randM = Eigen::MatrixXd::Random(21,21)*0.25;
-    // randM = (randM + Eigen::MatrixXd::Constant(21,21,0.5))*0.25;
+    Eigen::MatrixXd randM = Eigen::MatrixXd::Random(21,21)*0.3;
+    
+
+    randM = (randM + Eigen::MatrixXd::Constant(21,21,1))*0.15;
     // Serial.println("randM");
     // State::print_mtxd(randM);
     matrices::P_kp = (matrices::A * matrices::P_k_1 * matrices::A.transpose()) + randM;
